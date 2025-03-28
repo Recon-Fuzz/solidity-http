@@ -1,66 +1,80 @@
-## Foundry
+## solidity-http
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Solidity HTTP client library for Foundry scripting
 
-Foundry consists of:
+### Installation
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+forge install Recon-Fuzz/solidity-http
 ```
 
-### Test
+### Usage
 
-```shell
-$ forge test
+### 1. Import the library
+
+```solidity
+import {HTTP} from "solidity-http/HTTP.sol";
+import {HTTPBuilder} from "solidity-http/HTTPBuilder.sol";
 ```
 
-### Format
+### 2. Build and send your request
 
-```shell
-$ forge fmt
+Use builder functions to compose your request with headers, body, and query parameters.
+
+```solidity
+contract MyScript is Script {
+    using HTTPBuilder for HTTP.Request;
+
+    HTTP.Request request;
+
+    function run() external {
+        request
+            .withUrl("https://httpbin.org/post")
+            .withMethod(HTTP.Method.POST)
+            .withHeader("Content-Type", "application/json")
+            .withBody('{"foo": "bar"}');
+
+        HTTP.Response memory response = HTTP.request(request);
+
+        console.log("Status:", response.status);
+        console.log("Data:", response.data);
+    }
+}
 ```
 
-### Gas Snapshots
+### 3. Enable FFI
 
-```shell
-$ forge snapshot
+This library relies on Foundry's [FFI cheatcode](https://book.getfoundry.sh/cheatcodes/ffi.html) to call external processes. Enable it by:
+
+- Passing the `--ffi` flag to your command:
+
+```bash
+forge test --ffi
 ```
 
-### Anvil
+- Or setting `ffi = true` in your `foundry.toml`:
 
-```shell
-$ anvil
+```toml
+[profile.default]
+ffi = true
 ```
 
-### Deploy
+---
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+## Requirements
+
+- Foundry with FFI enabled:
+  - Either pass `--ffi` to commands (e.g. `forge test --ffi`)
+  - Or set `ffi = true` in `foundry.toml`
+
+```toml
+[profile.default]
+ffi = true
 ```
 
-### Cast
+- A UNIX-based machine with the following installed:
+  - `bash`, `curl`, `tail`, `sed`, `tr`, `cast`
 
-```shell
-$ cast <subcommand>
-```
+### Acknowledgements
 
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This library was inspired by [surl](https://github.com/memester-xyz/surl) and [axios](https://github.com/axios/axios)

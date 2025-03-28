@@ -1,0 +1,6 @@
+@openzeppelin=lib/openzeppelin-contracts
+@src=src
+@test=test
+@script=script
+solidity-stringutils=lib/solidity-stringutils
+
