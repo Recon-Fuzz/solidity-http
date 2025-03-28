@@ -13,8 +13,7 @@ forge install Recon-Fuzz/solidity-http
 ### 1. Import the library
 
 ```solidity
-import {HTTP} from "solidity-http/HTTP.sol";
-import {HTTPBuilder} from "solidity-http/HTTPBuilder.sol";
+import {HTTP} from "@src/HTTP.sol";
 ```
 
 ### 2. Build and send your request
@@ -23,18 +22,17 @@ Use builder functions to compose your request with headers, body, and query para
 
 ```solidity
 contract MyScript is Script {
-    using HTTPBuilder for HTTP.Request;
+    using HTTP for HTTP.Builder;
+    using HTTP for HTTP.Request;
 
-    HTTP.Request request;
+    HTTP.Builder http;
 
     function run() external {
-        request
-            .withUrl("https://httpbin.org/post")
-            .withMethod(HTTP.Method.POST)
+        HTTP.Response memory response = http.build().POST("https://httpbin.org/post")
             .withHeader("Content-Type", "application/json")
-            .withBody('{"foo": "bar"}');
-
-        HTTP.Response memory response = HTTP.request(request);
+            .withHeader("Accept", "application/json")
+            .withBody('{"foo": "bar"}')
+            .request();
 
         console.log("Status:", response.status);
         console.log("Data:", response.data);
