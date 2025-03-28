@@ -13,7 +13,7 @@ forge install Recon-Fuzz/solidity-http
 ### 1. Import the library
 
 ```solidity
-import {HTTP} from "@src/HTTP.sol";
+import {HTTP} from "solidity-http/HTTP.sol";
 ```
 
 ### 2. Build and send your request
