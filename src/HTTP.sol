@@ -41,6 +41,10 @@ library HTTP {
         return builder.requests[builder.requests.length - 1];
     }
 
+    function instance(HTTP.Builder storage builder) internal view returns (HTTP.Request storage) {
+        return builder.requests[builder.requests.length - 1];
+    }
+
     function withUrl(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
         req.url = url;
         return req;
