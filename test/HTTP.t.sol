@@ -5,13 +5,11 @@ import "forge-std/Test.sol";
 
 import {HTTP} from "@src/HTTP.sol";
 import {strings} from "solidity-stringutils/strings.sol";
-import {stdJson} from "forge-std/StdJson.sol";
 
 contract HTTPTest is Test {
     using HTTP for HTTP.Builder;
     using HTTP for HTTP.Request;
     using strings for *;
-    using stdJson for string;
 
     HTTP.Builder http;
 
