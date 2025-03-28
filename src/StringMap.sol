@@ -2,7 +2,7 @@
 // Inspired by https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.2.0/contracts/utils/structs/EnumerableMap.sol
 pragma solidity ^0.8.13;
 
-import {StringSet} from "@src/StringSet.sol";
+import {StringSet} from "./StringSet.sol";
 
 library StringMap {
     using StringSet for StringSet.Set;

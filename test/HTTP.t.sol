@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {HTTP} from "@src/HTTP.sol";
+import {HTTP} from "../src/HTTP.sol";
 import {strings} from "solidity-stringutils/strings.sol";
 
 contract HTTPTest is Test {

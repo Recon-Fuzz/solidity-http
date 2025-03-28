@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Vm} from "forge-std/Vm.sol";
-import {StringMap} from "@src/StringMap.sol";
+import {StringMap} from "./StringMap.sol";
 
 library HTTP {
     using StringMap for StringMap.StringToStringMap;
