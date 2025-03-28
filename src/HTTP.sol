@@ -56,11 +56,11 @@ library HTTP {
     }
 
     function GET(HTTP.Request storage req) internal returns (HTTP.Request storage) {
-        return withMethod(req, HTTP.Method.GET);
+        return withBody(withMethod(req, HTTP.Method.GET), "");
     }
 
     function GET(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
-        return withUrl(withMethod(req, HTTP.Method.GET), url);
+        return GET(withUrl(req, url));
     }
 
     function POST(HTTP.Request storage req) internal returns (HTTP.Request storage) {
@@ -68,7 +68,7 @@ library HTTP {
     }
 
     function POST(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
-        return withUrl(withMethod(req, HTTP.Method.POST), url);
+        return POST(withUrl(req, url));
     }
 
     function PUT(HTTP.Request storage req) internal returns (HTTP.Request storage) {
@@ -76,15 +76,15 @@ library HTTP {
     }
 
     function PUT(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
-        return withUrl(withMethod(req, HTTP.Method.PUT), url);
+        return PUT(withUrl(req, url));
     }
 
     function DELETE(HTTP.Request storage req) internal returns (HTTP.Request storage) {
-        return withMethod(req, HTTP.Method.DELETE);
+        return withBody(withMethod(req, HTTP.Method.DELETE), "");
     }
 
     function DELETE(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
-        return withUrl(withMethod(req, HTTP.Method.DELETE), url);
+        return DELETE(withUrl(req, url));
     }
 
     function PATCH(HTTP.Request storage req) internal returns (HTTP.Request storage) {
@@ -92,7 +92,7 @@ library HTTP {
     }
 
     function PATCH(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
-        return withUrl(withMethod(req, HTTP.Method.PATCH), url);
+        return PATCH(withUrl(req, url));
     }
 
     function withBody(HTTP.Request storage req, string memory body) internal returns (HTTP.Request storage) {
