@@ -9,7 +9,7 @@ library HTTP {
 
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
 
-    error HTTPBuilderInvalidArrayLengths(uint256 a, uint256 b);
+    error HTTPArrayLengthsMismatch(uint256 a, uint256 b);
 
     enum Method {
         GET,
@@ -32,17 +32,21 @@ library HTTP {
         string data;
     }
 
-    struct Builder {
+    struct Client {
         Request[] requests;
     }
 
-    function build(HTTP.Builder storage builder) internal returns (HTTP.Request storage) {
-        builder.requests.push();
-        return builder.requests[builder.requests.length - 1];
+    function initialize(HTTP.Client storage client) internal returns (HTTP.Request storage) {
+        client.requests.push();
+        return client.requests[client.requests.length - 1];
     }
 
-    function instance(HTTP.Builder storage builder) internal view returns (HTTP.Request storage) {
-        return builder.requests[builder.requests.length - 1];
+    function initialize(HTTP.Client storage client, string memory url) internal returns (HTTP.Request storage) {
+        return withUrl(initialize(client), url);
+    }
+
+    function instance(HTTP.Client storage client) internal view returns (HTTP.Request storage) {
+        return client.requests[client.requests.length - 1];
     }
 
     function withUrl(HTTP.Request storage req, string memory url) internal returns (HTTP.Request storage) {
@@ -113,7 +117,7 @@ library HTTP {
         returns (HTTP.Request storage)
     {
         if (keys.length != values.length) {
-            revert HTTPBuilderInvalidArrayLengths(keys.length, values.length);
+            revert HTTPArrayLengthsMismatch(keys.length, values.length);
         }
         for (uint256 i = 0; i < keys.length; i++) {
             req.headers.set(keys[i], values[i]);
@@ -134,7 +138,7 @@ library HTTP {
         returns (HTTP.Request storage)
     {
         if (keys.length != values.length) {
-            revert HTTPBuilderInvalidArrayLengths(keys.length, values.length);
+            revert HTTPArrayLengthsMismatch(keys.length, values.length);
         }
         for (uint256 i = 0; i < keys.length; i++) {
             req.query.set(keys[i], values[i]);
@@ -183,6 +187,7 @@ library HTTP {
         } else if (method == Method.PATCH) {
             return "PATCH";
         } else {
+            // unreachable code
             revert();
         }
     }

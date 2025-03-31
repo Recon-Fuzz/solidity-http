@@ -22,13 +22,12 @@ Use builder functions to compose your request with headers, body, and query para
 
 ```solidity
 contract MyScript is Script {
-    using HTTP for HTTP.Builder;
-    using HTTP for HTTP.Request;
+    using HTTP for *;
 
-    HTTP.Builder http;
+    HTTP.Client http;
 
     function run() external {
-        HTTP.Response memory response = http.build().POST("https://httpbin.org/post")
+        HTTP.Response memory response = http.initialize().POST("https://httpbin.org/post")
             .withHeader("Content-Type", "application/json")
             .withHeader("Accept", "application/json")
             .withBody('{"foo": "bar"}')
