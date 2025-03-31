@@ -10,13 +10,13 @@ forge install Recon-Fuzz/solidity-http
 
 ### Usage
 
-### 1. Import the library
+#### 1. Import the library
 
 ```solidity
 import {HTTP} from "solidity-http/HTTP.sol";
 ```
 
-### 2. Build and send your request
+#### 2. Build and send your request
 
 Use builder functions to compose your request with headers, body, and query parameters.
 
@@ -39,7 +39,7 @@ contract MyScript is Script {
 }
 ```
 
-### 3. Enable FFI
+#### 3. Enable FFI
 
 This library relies on Foundry's [FFI cheatcode](https://book.getfoundry.sh/cheatcodes/ffi.html) to call external processes. Enable it by:
 
@@ -58,7 +58,7 @@ ffi = true
 
 ---
 
-## Requirements
+### Requirements
 
 - Foundry with FFI enabled:
   - Either pass `--ffi` to commands (e.g. `forge test --ffi`)
