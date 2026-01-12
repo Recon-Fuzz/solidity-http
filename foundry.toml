@@ -4,4 +4,8 @@ out = "out"
 libs = ["lib"]
 ffi = true
 
+[lint]
+ignore = ["lib", "test", "script"]
+lint_on_build = false
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

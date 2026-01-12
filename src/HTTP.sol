@@ -8,6 +8,7 @@ library HTTP {
     using StringMap for StringMap.StringToStringMap;
 
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+    uint256 constant DEFAULT_MAX_REDIRECTS = 3;
 
     error HTTPArrayLengthsMismatch(uint256 a, uint256 b);
 
@@ -25,6 +26,8 @@ library HTTP {
         Method method;
         StringMap.StringToStringMap headers;
         StringMap.StringToStringMap query;
+        bool followRedirects;
+        uint256 maxRedirects;
     }
 
     struct Response {
@@ -38,7 +41,8 @@ library HTTP {
 
     function initialize(HTTP.Client storage client) internal returns (HTTP.Request storage) {
         client.requests.push();
-        return client.requests[client.requests.length - 1];
+        HTTP.Request storage req = client.requests[client.requests.length - 1];
+        return withMaxRedirects(req, DEFAULT_MAX_REDIRECTS);
     }
 
     function initialize(HTTP.Client storage client, string memory url) internal returns (HTTP.Request storage) {
@@ -146,6 +150,16 @@ library HTTP {
         return req;
     }
 
+    function withFollowRedirects(HTTP.Request storage req, bool enabled) internal returns (HTTP.Request storage) {
+        req.followRedirects = enabled;
+        return req;
+    }
+
+    function withMaxRedirects(HTTP.Request storage req, uint256 maxRedirects) internal returns (HTTP.Request storage) {
+        req.maxRedirects = maxRedirects == 0 ? DEFAULT_MAX_REDIRECTS : maxRedirects;
+        return req;
+    }
+
     function request(Request storage req) internal returns (Response memory res) {
         string memory scriptStart = 'response=$(curl -s -w "\\n%{http_code}" ';
         string memory scriptEnd =
@@ -162,6 +176,14 @@ library HTTP {
 
         if (bytes(req.body).length > 0) {
             curlParams = string.concat(curlParams, "-d '", req.body, "' ");
+        }
+
+        if (req.followRedirects) {
+            string memory maxRedirects = vm.toString(req.maxRedirects);
+            curlParams = string.concat(curlParams, "-L --max-redirs ", maxRedirects, " ");
+            if (_hasHttpsPrefix(req.url)) {
+                curlParams = string.concat(curlParams, "--proto =https ");
+            }
         }
 
         string memory quotedURL = string.concat('"', req.url, '"');
@@ -190,5 +212,19 @@ library HTTP {
             // unreachable code
             revert();
         }
+    }
+
+    function _hasHttpsPrefix(string memory value) private pure returns (bool) {
+        bytes memory valueBytes = bytes(value);
+        bytes memory prefixBytes = bytes("https://");
+        if (valueBytes.length < prefixBytes.length) {
+            return false;
+        }
+        for (uint256 i = 0; i < prefixBytes.length; i++) {
+            if (valueBytes[i] != prefixBytes[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

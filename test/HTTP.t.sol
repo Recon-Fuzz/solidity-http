@@ -20,9 +20,9 @@ contract HTTPTest is Test {
     }
 
     function test_HTTP_GET_options() public {
-        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET().withHeader(
-            "accept", "application/json"
-        ).withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==").request();
+        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET()
+            .withHeader("accept", "application/json").withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+            .request();
 
         assertEq(res.status, 200);
 
@@ -55,7 +55,7 @@ contract HTTPTest is Test {
     }
 
     function test_HTTP_PUT_json() public {
-        HTTP.Response memory res = http.initialize("https://httpbin.org/put").PUT().withBody('{"foo": "bar"}')
+        HTTP.Response memory res = http.initialize("https://postman-echo.com/put").PUT().withBody('{"foo": "bar"}')
             .withHeader("Content-Type", "application/json").request();
 
         assertEq(res.status, 200);
@@ -76,5 +76,19 @@ contract HTTPTest is Test {
     function test_HTTP_instance() public {
         HTTP.Request storage req = http.initialize("https://jsonplaceholder.typicode.com/todos/1");
         assertEq(req.url, "https://jsonplaceholder.typicode.com/todos/1");
+    }
+
+    function test_HTTP_redirects_disabled_by_default() public {
+        HTTP.Response memory res = http.initialize().GET("https://httpbin.org/relative-redirect/1").request();
+
+        assertEq(res.status, 302);
+    }
+
+    function test_HTTP_redirects_enabled() public {
+        HTTP.Response memory res = http.initialize().GET("https://httpbin.org/relative-redirect/1")
+            .withFollowRedirects(true).withMaxRedirects(3).request();
+
+        assertEq(res.status, 200);
+        assertTrue(res.data.toSlice().contains(("https://httpbin.org/get").toSlice()));
     }
 }

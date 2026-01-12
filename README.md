@@ -39,6 +39,18 @@ contract MyScript is Script {
 }
 ```
 
+#### Redirects
+
+Redirects are disabled by default to avoid leaking sensitive headers to untrusted hosts. To follow redirects, opt in
+explicitly and (optionally) set a max redirect count.
+
+```solidity
+HTTP.Response memory response = http.initialize().GET("https://example.com")
+    .withFollowRedirects(true)
+    .withMaxRedirects(3)
+    .request();
+```
+
 #### 3. Enable FFI
 
 This library relies on Foundry's [FFI cheatcode](https://book.getfoundry.sh/cheatcodes/ffi.html) to call external processes. Enable it by:
