@@ -152,9 +152,6 @@ library HTTP {
 
     function withFollowRedirects(HTTP.Request storage req, bool enabled) internal returns (HTTP.Request storage) {
         req.followRedirects = enabled;
-        if (enabled && req.maxRedirects == 0) {
-            req.maxRedirects = DEFAULT_MAX_REDIRECTS;
-        }
         return req;
     }
 
