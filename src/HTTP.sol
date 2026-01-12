@@ -147,7 +147,7 @@ library HTTP {
     }
 
     function request(Request storage req) internal returns (Response memory res) {
-        string memory scriptStart = 'response=$(curl -s -w "\\n%{http_code}" ';
+        string memory scriptStart = 'response=$(curl -sL --max-redirs 3 --proto-redir =https -w "\\n%{http_code}" ';
         string memory scriptEnd =
             '); status=$(tail -n1 <<< "$response"); data=$(sed "$ d" <<< "$response");data=$(echo "$data" | tr -d "\\n"); cast abi-encode "response(uint256,string)" "$status" "$data";';
 
