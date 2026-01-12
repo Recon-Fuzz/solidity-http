@@ -42,8 +42,7 @@ library HTTP {
     function initialize(HTTP.Client storage client) internal returns (HTTP.Request storage) {
         client.requests.push();
         HTTP.Request storage req = client.requests[client.requests.length - 1];
-        req.maxRedirects = DEFAULT_MAX_REDIRECTS;
-        return req;
+        return withMaxRedirects(req, DEFAULT_MAX_REDIRECTS);
     }
 
     function initialize(HTTP.Client storage client, string memory url) internal returns (HTTP.Request storage) {
@@ -160,7 +159,7 @@ library HTTP {
     }
 
     function withMaxRedirects(HTTP.Request storage req, uint256 maxRedirects) internal returns (HTTP.Request storage) {
-        req.maxRedirects = maxRedirects;
+        req.maxRedirects = maxRedirects == 0 ? DEFAULT_MAX_REDIRECTS : maxRedirects;
         return req;
     }
 
@@ -183,8 +182,7 @@ library HTTP {
         }
 
         if (req.followRedirects) {
-            string memory maxRedirects =
-                req.maxRedirects == 0 ? vm.toString(DEFAULT_MAX_REDIRECTS) : vm.toString(req.maxRedirects);
+            string memory maxRedirects = vm.toString(req.maxRedirects);
             curlParams = string.concat(curlParams, "-L --max-redirs ", maxRedirects, " ");
             if (_hasHttpsPrefix(req.url)) {
                 curlParams = string.concat(curlParams, "--proto =https ");
