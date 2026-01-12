@@ -20,9 +20,9 @@ contract HTTPTest is Test {
     }
 
     function test_HTTP_GET_options() public {
-        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET().withHeader(
-            "accept", "application/json"
-        ).withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==").request();
+        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET()
+            .withHeader("accept", "application/json").withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+            .request();
 
         assertEq(res.status, 200);
 
