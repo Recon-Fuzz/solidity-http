@@ -41,7 +41,9 @@ library HTTP {
 
     function initialize(HTTP.Client storage client) internal returns (HTTP.Request storage) {
         client.requests.push();
-        return client.requests[client.requests.length - 1];
+        HTTP.Request storage req = client.requests[client.requests.length - 1];
+        req.maxRedirects = DEFAULT_MAX_REDIRECTS;
+        return req;
     }
 
     function initialize(HTTP.Client storage client, string memory url) internal returns (HTTP.Request storage) {
