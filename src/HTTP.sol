@@ -183,7 +183,10 @@ library HTTP {
         if (req.followRedirects) {
             string memory maxRedirects =
                 req.maxRedirects == 0 ? vm.toString(DEFAULT_MAX_REDIRECTS) : vm.toString(req.maxRedirects);
-            curlParams = string.concat(curlParams, "-L --max-redirs ", maxRedirects, " --proto-redir=https ");
+            curlParams = string.concat(curlParams, "-L --max-redirs ", maxRedirects, " ");
+            if (_hasHttpsPrefix(req.url)) {
+                curlParams = string.concat(curlParams, "--proto =https ");
+            }
         }
 
         string memory quotedURL = string.concat('"', req.url, '"');
@@ -212,5 +215,19 @@ library HTTP {
             // unreachable code
             revert();
         }
+    }
+
+    function _hasHttpsPrefix(string memory value) private pure returns (bool) {
+        bytes memory valueBytes = bytes(value);
+        bytes memory prefixBytes = bytes("https://");
+        if (valueBytes.length < prefixBytes.length) {
+            return false;
+        }
+        for (uint256 i = 0; i < prefixBytes.length; i++) {
+            if (valueBytes[i] != prefixBytes[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
