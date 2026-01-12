@@ -8,6 +8,7 @@ library HTTP {
     using StringMap for StringMap.StringToStringMap;
 
     Vm constant vm = Vm(address(bytes20(uint160(uint256(keccak256("hevm cheat code"))))));
+    uint256 constant DEFAULT_MAX_REDIRECTS = 3;
 
     error HTTPArrayLengthsMismatch(uint256 a, uint256 b);
 
@@ -151,7 +152,7 @@ library HTTP {
     function withFollowRedirects(HTTP.Request storage req, bool enabled) internal returns (HTTP.Request storage) {
         req.followRedirects = enabled;
         if (enabled && req.maxRedirects == 0) {
-            req.maxRedirects = 3;
+            req.maxRedirects = DEFAULT_MAX_REDIRECTS;
         }
         return req;
     }
@@ -180,7 +181,8 @@ library HTTP {
         }
 
         if (req.followRedirects) {
-            string memory maxRedirects = req.maxRedirects == 0 ? "3" : vm.toString(req.maxRedirects);
+            string memory maxRedirects =
+                req.maxRedirects == 0 ? vm.toString(DEFAULT_MAX_REDIRECTS) : vm.toString(req.maxRedirects);
             curlParams =
                 string.concat(curlParams, "-L --max-redirs ", maxRedirects, " --proto-redir=https ");
         }
