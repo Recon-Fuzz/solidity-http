@@ -20,9 +20,10 @@ contract HTTPTest is Test {
     }
 
     function test_HTTP_GET_options() public {
-        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET().withHeader(
-            "accept", "application/json"
-        ).withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==").request();
+        HTTP.Response memory res = http.initialize("https://httpbin.org/headers").GET()
+            .withHeader("accept", "application/json")
+            .withHeader("Authorization", "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==")
+            .request();
 
         assertEq(res.status, 200);
 
@@ -85,9 +86,10 @@ contract HTTPTest is Test {
     }
 
     function test_HTTP_redirects_enabled() public {
-        HTTP.Response memory res = http.initialize().GET("https://httpbin.org/relative-redirect/1").withFollowRedirects(
-            true
-        ).withMaxRedirects(3).request();
+        HTTP.Response memory res = http.initialize().GET("https://httpbin.org/relative-redirect/1")
+            .withFollowRedirects(true)
+            .withMaxRedirects(3)
+            .request();
 
         assertEq(res.status, 200);
         assertTrue(res.data.toSlice().contains(("https://httpbin.org/get").toSlice()));
