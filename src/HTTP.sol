@@ -182,7 +182,7 @@ library HTTP {
         if (req.followRedirects) {
             string memory maxRedirects = req.maxRedirects == 0 ? "3" : vm.toString(req.maxRedirects);
             curlParams =
-                string.concat(curlParams, "-L --max-redirs ", maxRedirects, " --proto-redir =https ");
+                string.concat(curlParams, "-L --max-redirs ", maxRedirects, " --proto-redir=https ");
         }
 
         string memory quotedURL = string.concat('"', req.url, '"');

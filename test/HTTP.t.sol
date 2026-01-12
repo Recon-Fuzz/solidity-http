@@ -77,4 +77,21 @@ contract HTTPTest is Test {
         HTTP.Request storage req = http.initialize("https://jsonplaceholder.typicode.com/todos/1");
         assertEq(req.url, "https://jsonplaceholder.typicode.com/todos/1");
     }
+
+    function test_HTTP_redirects_disabled_by_default() public {
+        HTTP.Response memory res =
+            http.initialize().GET("https://httpbin.org/redirect-to?url=https://httpbin.org/get").request();
+
+        assertEq(res.status, 302);
+    }
+
+    function test_HTTP_redirects_enabled() public {
+        HTTP.Response memory res = http.initialize().GET("https://httpbin.org/redirect-to?url=https://httpbin.org/get")
+            .withFollowRedirects(true)
+            .withMaxRedirects(3)
+            .request();
+
+        assertEq(res.status, 200);
+        assertTrue(res.data.toSlice().contains(("https://httpbin.org/get").toSlice()));
+    }
 }
