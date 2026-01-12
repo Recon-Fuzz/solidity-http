@@ -25,6 +25,8 @@ library HTTP {
         Method method;
         StringMap.StringToStringMap headers;
         StringMap.StringToStringMap query;
+        bool followRedirects;
+        uint256 maxRedirects;
     }
 
     struct Response {
@@ -146,6 +148,19 @@ library HTTP {
         return req;
     }
 
+    function withFollowRedirects(HTTP.Request storage req, bool enabled) internal returns (HTTP.Request storage) {
+        req.followRedirects = enabled;
+        if (enabled && req.maxRedirects == 0) {
+            req.maxRedirects = 3;
+        }
+        return req;
+    }
+
+    function withMaxRedirects(HTTP.Request storage req, uint256 maxRedirects) internal returns (HTTP.Request storage) {
+        req.maxRedirects = maxRedirects;
+        return req;
+    }
+
     function request(Request storage req) internal returns (Response memory res) {
         string memory scriptStart = 'response=$(curl -s -w "\\n%{http_code}" ';
         string memory scriptEnd =
@@ -162,6 +177,12 @@ library HTTP {
 
         if (bytes(req.body).length > 0) {
             curlParams = string.concat(curlParams, "-d '", req.body, "' ");
+        }
+
+        if (req.followRedirects) {
+            string memory maxRedirects = req.maxRedirects == 0 ? "3" : vm.toString(req.maxRedirects);
+            curlParams =
+                string.concat(curlParams, "-L --max-redirs ", maxRedirects, " --proto-redir =https ");
         }
 
         string memory quotedURL = string.concat('"', req.url, '"');
